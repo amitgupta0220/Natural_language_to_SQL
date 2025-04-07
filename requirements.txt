@@ -1,0 +1,6 @@
+Flask
+mysql-connector-python
+pandas
+python-dotenv
+google-generativeai
+openai>=1.0.0

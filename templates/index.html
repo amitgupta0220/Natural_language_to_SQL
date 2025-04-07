@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Natural Language to SQL Query Executor</title>
+    <link rel="stylesheet" href="../static/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Natural Language to SQL Query Executor</h1>
+      <form id="query-form">
+        <label for="user">User:</label>
+        <input type="text" id="user" name="user" required />
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" />
+        <label for="host">Host:</label>
+        <input type="text" id="host" name="host" required />
+        <label for="database">Database:</label>
+        <input type="text" id="database" name="database" required />
+        <label for="question">Natural Language Query:</label>
+        <textarea id="question" name="question" required></textarea>
+        <button type="submit">Execute</button>
+      </form>
+      <div id="results">
+        <h2>Generated SQL Query:</h2>
+        <p id="sql-query"></p>
+        <h2>Results:</h2>
+        <table id="results-table"></table>
+        <form id="download-form" method="POST" action="/download">
+          <input type="hidden" id="csv-data" name="csv_data" />
+          <button type="submit" id="download-btn">Download data as CSV</button>
+        </form>
+      </div>
+    </div>
+    <script>
+      document
+        .getElementById("query-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          fetch("/execute", {
+            method: "POST",
+            body: new FormData(this),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.error) {
+                alert(data.error);
+              } else {
+                document.getElementById("sql-query").innerText = data.sql_query;
+                const resultsTable = document.getElementById("results-table");
+                resultsTable.innerHTML = "";
+                const headers = data.columns;
+                const rows = data.result;
+
+                const thead = document.createElement("thead");
+                const tr = document.createElement("tr");
+                headers.forEach((header) => {
+                  const th = document.createElement("th");
+                  th.innerText = header;
+                  tr.appendChild(th);
+                });
+                thead.appendChild(tr);
+                resultsTable.appendChild(thead);
+
+                const tbody = document.createElement("tbody");
+                rows.forEach((row) => {
+                  const tr = document.createElement("tr");
+                  headers.forEach((header) => {
+                    const td = document.createElement("td");
+                    td.innerText = row[header];
+                    tr.appendChild(td);
+                  });
+                  tbody.appendChild(tr);
+                });
+                resultsTable.appendChild(tbody);
+
+                document.getElementById("csv-data").value = data.csv;
+                document.getElementById("download-btn").style.display = "block";
+              }
+            });
+        });
+    </script>
+  </body>
+</html>
