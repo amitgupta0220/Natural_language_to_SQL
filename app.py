@@ -96,6 +96,19 @@ Remember to:
 - Use appropriate data types in comparisons"""
     return prompt
 
+# Function to fetch available databases
+def fetch_databases(user, password, host):
+    try:
+        conn = mysql.connector.connect(user=user, password=password, host=host)
+        if conn.is_connected():
+            cursor = conn.cursor()
+            cursor.execute("SHOW DATABASES")
+            databases = [db[0] for db in cursor.fetchall() if db[0] not in ['information_schema', 'performance_schema', 'mysql', 'sys']]
+            conn.close()
+            return databases, None
+    except Error as e:
+        return None, f"Error connecting to database: {str(e)}"
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -146,6 +159,20 @@ def download():
         as_attachment=True,
         download_name='query_results.csv'
     )
+
+@app.route('/fetch-databases', methods=['POST'])
+def get_databases():
+    user = request.form['user']
+    password = request.form['password']
+    host = request.form['host']
+
+    if user and host:
+        databases, error = fetch_databases(user, password, host)
+        if error:
+            return jsonify({"error": error})
+        return jsonify({"databases": databases})
+    else:
+        return jsonify({"error": "Please provide user and host information."})
 
 if __name__ == '__main__':
     app.run(debug=True)
