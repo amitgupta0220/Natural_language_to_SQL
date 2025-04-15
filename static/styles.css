@@ -93,6 +93,17 @@ button:hover {
     border-radius: 4px;
     margin: 10px 0;
     display: none;
+    white-space: pre-wrap;
+    font-family: monospace;
+}
+
+.success-message {
+    color: #4CAF50;
+    background-color: #E8F5E9;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+    display: none;
 }
 
 .table-container {
@@ -133,4 +144,263 @@ tr:nth-child(even) {
 
 #results {
     margin-top: 30px;
+}
+
+/* Tab styles */
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.tab-btn {
+    background-color: #f8f9fa;
+    color: #555;
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 0;
+}
+
+.tab-btn:hover {
+    background-color: #e9ecef;
+}
+
+.tab-btn.active {
+    background-color: #2196F3;
+    color: white;
+    border-color: #2196F3;
+}
+
+.tab-btn.active:hover {
+    background-color: #1976D2;
+}
+
+.tab-content {
+    display: none;
+    padding: 20px 0;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* File input styling */
+input[type="file"] {
+    padding: 10px;
+    border: 2px dashed #ddd;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #f8f9fa;
+}
+
+input[type="file"]:hover {
+    border-color: #2196F3;
+}
+
+/* Database selection layout */
+.database-selection {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.database-selection select {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.create-db-btn {
+    background-color: #4CAF50;
+    margin-top: 0;
+    white-space: nowrap;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.modal-buttons button[type="button"] {
+    background-color: #f44336;
+}
+
+.modal-buttons button[type="button"]:hover {
+    background-color: #d32f2f;
+}
+
+small {
+    display: block;
+    color: #666;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* SQL Execution Details */
+#sql-execution-details {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#sql-execution-details h3 {
+    margin-top: 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.details-section {
+    margin-top: 15px;
+}
+
+.details-section h4 {
+    color: #555;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.details-section ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.details-section li {
+    padding: 8px 12px;
+    background-color: white;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.details-section li:last-child {
+    margin-bottom: 0;
+}
+
+/* Table Info Styles */
+.table-info {
+    background-color: white;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.table-info h5 {
+    margin: 0 0 10px 0;
+    color: #2196F3;
+    font-size: 16px;
+}
+
+.table-info ul {
+    margin: 0;
+    padding: 0 0 0 20px;
+    list-style-type: disc;
+}
+
+.table-info li {
+    border: none;
+    padding: 4px 0;
+    background: none;
+    color: #666;
+}
+
+/* Execution Log Styles */
+.log-entry {
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    border: 1px solid transparent;
+}
+
+.log-entry.success {
+    background-color: #E8F5E9;
+    border-color: #A5D6A7;
+    color: #2E7D32;
+}
+
+.log-entry.warning {
+    background-color: #FFF3E0;
+    border-color: #FFCC80;
+    color: #EF6C00;
+}
+
+.log-entry.error {
+    background-color: #FFEBEE;
+    border-color: #FFCDD2;
+    color: #C62828;
+}
+
+.log-entry.info {
+    background-color: #E3F2FD;
+    border-color: #90CAF9;
+    color: #1565C0;
+}
+
+.log-message {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.log-details {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* Loading state */
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.fix-sql-btn {
+    background-color: #FF9800;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.fix-sql-btn:hover {
+    background-color: #F57C00;
 }

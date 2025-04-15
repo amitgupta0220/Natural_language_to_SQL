@@ -1,60 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Natural Language to SQL Query Executor</title>
-    <link rel="stylesheet" href="../static/styles.css" />
-  </head>
-  <body>
-    <div class="container">
-      <h1>Natural Language to SQL Query Executor</h1>
-      <form id="connection-form">
-        <div class="form-group">
-          <label for="user">User:</label>
-          <input type="text" id="user" name="user" required />
-        </div>
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" />
-        </div>
-        <div class="form-group">
-          <label for="host">Host:</label>
-          <input type="text" id="host" name="host" required />
-        </div>
-        <button type="button" id="connect-btn">Connect to Database</button>
-      </form>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Natural Language to SQL Query Executor</title>
+  <link rel="stylesheet" href="../static/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Natural Language to SQL Query Executor</h1>
+    <!-- Connection Form -->
+    <form id="connection-form">
+      <div class="form-group">
+        <label for="user">User:</label>
+        <input type="text" id="user" name="user" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" />
+      </div>
+      <div class="form-group">
+        <label for="host">Host:</label>
+        <input type="text" id="host" name="host" required />
+      </div>
+      <button type="button" id="connect-btn">Connect to Database</button>
+    </form>
 
-      <form id="query-form" style="display: none;">
-        <div class="form-group">
-          <label for="database">Select Database:</label>
-          <select id="database" name="database" required>
-            <option value="">Select a database...</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="question">Natural Language Query:</label>
-          <textarea id="question" name="question" required></textarea>
-        </div>
-        <button type="submit">Execute Query</button>
-      </form>
+    <!-- Tabs -->
+    <div id="tabs-container" style="display: none;">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="query">Query Database</button>
+        <button class="tab-btn" data-tab="upload">Upload SQL File</button>
+        <button class="tab-btn" data-tab="manage">Manage Tables</button>
+      </div>
 
-      <div id="error-message" class="error-message"></div>
+      <!-- Query Tab -->
+      <div id="query-tab" class="tab-content active">
+        <form id="query-form">
+          <div class="form-group">
+            <label for="database">Select Database:</label>
+            <div class="database-selection">
+              <select id="database" name="database" required>
+                <option value="">Select a database...</option>
+              </select>
+              <button type="button" class="create-db-btn" onclick="showCreateDatabaseModal('database')">Create New</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="question">Natural Language Query:</label>
+            <textarea id="question" name="question" required></textarea>
+          </div>
+          <button type="submit">Execute Query</button>
+        </form>
+      </div>
 
-      <div id="results" style="display: none;">
-        <h2>Generated SQL Query:</h2>
-        <pre id="sql-query"></pre>
-        <h2>Results:</h2>
-        <div class="table-container">
-          <table id="results-table"></table>
-        </div>
-        <form id="download-form" method="POST" action="/download">
-          <input type="hidden" id="csv-data" name="csv_data" />
-          <button type="submit" id="download-btn">Download data as CSV</button>
+      <!-- Upload Tab -->
+      <div id="upload-tab" class="tab-content">
+        <form id="sql-upload-form">
+          <div class="form-group">
+            <label for="database-upload">Select Database:</label>
+            <div class="database-selection">
+              <select id="database-upload" name="database" required>
+                <option value="">Select a database...</option>
+              </select>
+              <button type="button" class="create-db-btn" onclick="showCreateDatabaseModal('database-upload')">Create New</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="sql-file">Select SQL File:</label>
+            <input type="file" id="sql-file" name="sql-file" accept=".sql" required />
+          </div>
+          <button type="submit">Execute SQL File</button>
+        </form>
+      </div>
+
+      <!-- Manage Tables Tab -->
+      <div id="manage-tab" class="tab-content">
+        <h2>Manage Tables</h2>
+        <form id="manage-tables-form">
+          <div class="form-group">
+            <label for="database-manage">Select Database:</label>
+            <div class="database-selection">
+              <select id="database-manage" name="database" required>
+                <option value="">Select a database...</option>
+              </select>
+              <button type="button" class="create-db-btn" onclick="showCreateDatabaseModal('database-manage')">Create New</button>
+            </div>
+          </div>
+          <button type="button" id="fetch-tables-btn">Fetch Tables</button>
+
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="table-select">Select Table to Drop:</label>
+            <select id="table-select" name="table_name">
+              <option value="">(No tables loaded yet)</option>
+            </select>
+          </div>
+
+          <button type="button" id="drop-table-btn">Drop Table</button>
         </form>
       </div>
     </div>
+
+    <!-- Error/Success Message -->
+    <div id="error-message" class="error-message"></div>
+
+    <!-- Create Database Modal -->
+    <div id="create-db-modal" class="modal">
+      <div class="modal-content">
+        <h2>Create New Database</h2>
+        <form id="create-db-form">
+          <div class="form-group">
+            <label for="new-db-name">Database Name:</label>
+            <input type="text" id="new-db-name" name="new-db-name" required pattern="[a-zA-Z][a-zA-Z0-9_]*"/>
+            <small>Database name must start with a letter and can only contain letters, numbers, and underscores</small>
+          </div>
+          <div class="modal-buttons">
+            <button type="submit">Create</button>
+            <button type="button" onclick="closeCreateDatabaseModal()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Results (Query) -->
+    <div id="results" style="display: none;">
+      <h2>Generated SQL Query:</h2>
+      <pre id="sql-query"></pre>
+      <h2>Results:</h2>
+      <div class="table-container">
+        <table id="results-table"></table>
+      </div>
+      <form id="download-form" method="POST" action="/download">
+        <input type="hidden" id="csv-data" name="csv_data" />
+        <button type="submit" id="download-btn">Download data as CSV</button>
+      </form>
+    </div>
+
     <script>
+      // ====== Tab Switching ======
+      document.querySelectorAll('.tab-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+          
+          button.classList.add('active');
+          document.getElementById(button.dataset.tab + '-tab').classList.add('active');
+        });
+      });
+
+      // ====== Connect to DB ======
       document.getElementById('connect-btn').addEventListener('click', function() {
         const user = document.getElementById('user').value;
         const password = document.getElementById('password').value;
@@ -79,15 +173,20 @@
           if (data.error) {
             showError(data.error);
           } else {
-            const databaseSelect = document.getElementById('database');
-            databaseSelect.innerHTML = '<option value="">Select a database...</option>';
-            data.databases.forEach(db => {
-              const option = document.createElement('option');
-              option.value = db;
-              option.textContent = db;
-              databaseSelect.appendChild(option);
+            // Update all database selects
+            const dbSelects = ['database', 'database-upload', 'database-manage'];
+            dbSelects.forEach(selectId => {
+              const sel = document.getElementById(selectId);
+              sel.innerHTML = '<option value="">Select a database...</option>';
+              data.databases.forEach(db => {
+                const option = document.createElement('option');
+                option.value = db;
+                option.textContent = db;
+                sel.appendChild(option);
+              });
             });
-            document.getElementById('query-form').style.display = 'block';
+
+            document.getElementById('tabs-container').style.display = 'block';
             hideError();
           }
         })
@@ -96,6 +195,130 @@
         });
       });
 
+      // ====== Create Database Modal ======
+      let activeSelectId = null;
+
+      function showCreateDatabaseModal(selectId) {
+        activeSelectId = selectId;
+        document.getElementById('create-db-modal').style.display = 'block';
+        document.getElementById('new-db-name').value = '';
+      }
+
+      function closeCreateDatabaseModal() {
+        document.getElementById('create-db-modal').style.display = 'none';
+        activeSelectId = null;
+      }
+
+      document.getElementById('create-db-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const dbName = document.getElementById('new-db-name').value;
+        
+        if (!dbName) {
+          showError('Please enter a database name');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('user', document.getElementById('user').value);
+        formData.append('password', document.getElementById('password').value);
+        formData.append('host', document.getElementById('host').value);
+        formData.append('database', dbName);
+
+        fetch('/create-database', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            showError(data.error);
+          } else {
+            // Add new DB to the relevant selects
+            const dbSelects = ['database', 'database-upload', 'database-manage'];
+            dbSelects.forEach(selectId => {
+              const sel = document.getElementById(selectId);
+              const option = document.createElement('option');
+              option.value = dbName;
+              option.textContent = dbName;
+              sel.appendChild(option);
+
+              if (selectId === activeSelectId) {
+                sel.value = dbName;
+              }
+            });
+            
+            showSuccess(data.message);
+            closeCreateDatabaseModal();
+          }
+        })
+        .catch(error => {
+          showError('Error creating database: ' + error.message);
+        });
+      });
+
+      // Close modal when clicking outside
+      window.onclick = function(event) {
+        const modal = document.getElementById('create-db-modal');
+        if (event.target === modal) {
+          closeCreateDatabaseModal();
+        }
+      };
+
+      // ====== Upload SQL File ======
+      document.getElementById('sql-upload-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const fileInput = document.getElementById('sql-file');
+        const file = fileInput.files[0];
+        const database = document.getElementById('database-upload').value;
+
+        if (!file) {
+          showError('Please select a SQL file');
+          return;
+        }
+        if (!file.name.endsWith('.sql')) {
+          showError('Please select a valid SQL file (.sql extension)');
+          return;
+        }
+        if (!database) {
+          showError('Please select a database');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('sql-file', file);
+        formData.append('user', document.getElementById('user').value);
+        formData.append('password', document.getElementById('password').value);
+        formData.append('host', document.getElementById('host').value);
+        formData.append('database', database);
+
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.textContent = 'Executing...';
+        submitButton.disabled = true;
+
+        fetch('/execute-sql-file', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            showError(data.error);
+          } else {
+            showSuccess(data.message || 'SQL file executed successfully.');
+            fileInput.value = ''; // Clear file input
+          }
+        })
+        .catch(error => {
+          showError('Error executing SQL file: ' + error.message);
+        })
+        .finally(() => {
+          submitButton.textContent = originalText;
+          submitButton.disabled = false;
+        });
+      });
+
+      // ====== Query Form ======
       document.getElementById('query-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(this);
@@ -112,14 +335,19 @@
           if (data.error) {
             showError(data.error);
           } else {
+            // Show the generated SQL query
             document.getElementById('sql-query').innerText = data.sql_query;
+
+            // Build the results table
             const resultsTable = document.getElementById('results-table');
             resultsTable.innerHTML = '';
+
             const headers = data.columns;
             const rows = data.result;
 
+            // Table header
             const thead = document.createElement('thead');
-            const tr = document.createElement('tr');
+            let tr = document.createElement('tr');
             headers.forEach(header => {
               const th = document.createElement('th');
               th.innerText = header;
@@ -128,9 +356,10 @@
             thead.appendChild(tr);
             resultsTable.appendChild(thead);
 
+            // Table body
             const tbody = document.createElement('tbody');
             rows.forEach(row => {
-              const tr = document.createElement('tr');
+              tr = document.createElement('tr');
               headers.forEach(header => {
                 const td = document.createElement('td');
                 td.innerText = row[header];
@@ -140,9 +369,11 @@
             });
             resultsTable.appendChild(tbody);
 
+            // CSV Download
             document.getElementById('csv-data').value = data.csv;
             document.getElementById('download-btn').style.display = 'block';
             document.getElementById('results').style.display = 'block';
+
             hideError();
           }
         })
@@ -151,15 +382,114 @@
         });
       });
 
+      // ====== Manage Tables ======
+      document.getElementById('fetch-tables-btn').addEventListener('click', function() {
+        const databaseManage = document.getElementById('database-manage').value;
+        if (!databaseManage) {
+          showError('Please select a database to fetch tables from.');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('user', document.getElementById('user').value);
+        formData.append('password', document.getElementById('password').value);
+        formData.append('host', document.getElementById('host').value);
+        formData.append('database', databaseManage);
+
+        fetch('/fetch-tables', {
+          method: 'POST',
+          body: formData
+        })
+        .then(resp => resp.json())
+        .then(data => {
+          if (data.error) {
+            showError(data.error);
+          } else {
+            const tableSelect = document.getElementById('table-select');
+            tableSelect.innerHTML = '';
+            if (data.tables.length === 0) {
+              tableSelect.innerHTML = '<option value="">(No tables found)</option>';
+            } else {
+              data.tables.forEach(tbl => {
+                const opt = document.createElement('option');
+                opt.value = tbl;
+                opt.textContent = tbl;
+                tableSelect.appendChild(opt);
+              });
+            }
+            showSuccess('Tables fetched successfully. Select one to drop.');
+          }
+        })
+        .catch(error => {
+          showError('Error fetching tables: ' + error.message);
+        });
+      });
+
+      document.getElementById('drop-table-btn').addEventListener('click', function() {
+        const databaseManage = document.getElementById('database-manage').value;
+        const tableName = document.getElementById('table-select').value;
+
+        if (!databaseManage) {
+          showError('Please select a database first.');
+          return;
+        }
+        if (!tableName) {
+          showError('Please select a table to drop.');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('user', document.getElementById('user').value);
+        formData.append('password', document.getElementById('password').value);
+        formData.append('host', document.getElementById('host').value);
+        formData.append('database', databaseManage);
+        formData.append('table_name', tableName);
+
+        fetch('/drop-table', {
+          method: 'POST',
+          body: formData
+        })
+        .then(resp => resp.json())
+        .then(data => {
+          if (data.error) {
+            showError(data.error);
+          } else {
+            showSuccess(data.message);
+
+            // Optionally, remove the dropped table from the dropdown
+            const tableSelect = document.getElementById('table-select');
+            const options = Array.from(tableSelect.options);
+            options.forEach(opt => {
+              if (opt.value === tableName) {
+                opt.remove();
+              }
+            });
+          }
+        })
+        .catch(error => {
+          showError('Error dropping table: ' + error.message);
+        });
+      });
+
+      // ====== Show/Hide Error or Success ======
       function showError(message) {
-        const errorDiv = document.getElementById('error-message');
-        errorDiv.textContent = message;
-        errorDiv.style.display = 'block';
+        const msgDiv = document.getElementById('error-message');
+        msgDiv.textContent = message;
+        msgDiv.style.display = 'block';
+        msgDiv.className = 'error-message';
+      }
+
+      function showSuccess(message) {
+        const msgDiv = document.getElementById('error-message');
+        msgDiv.textContent = message;
+        msgDiv.style.display = 'block';
+        msgDiv.className = 'success-message';
       }
 
       function hideError() {
         document.getElementById('error-message').style.display = 'none';
       }
     </script>
-  </body>
+  </div>
+</body>
 </html>
