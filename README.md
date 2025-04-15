@@ -1,8 +1,6 @@
 # Natural Language to SQL
 
-![App Screenshot](![alt text](image.png))
-![alt text](image-1.png)
-![alt text](image-2.png)
+![App Screenshot](static/Annotation 2025-04-15 111944.png.png)
 
 ## 🧠 Overview
 
