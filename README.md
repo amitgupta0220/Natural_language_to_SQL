@@ -1,6 +1,8 @@
 # Natural Language to SQL
 
-![App Screenshot](static/Annotation 2025-04-15 111944.png)
+![App Screenshot](static/img3.png)
+![App Screenshot](static/img2.png)
+![App Screenshot](static/img1.png)
 
 ## 🧠 Overview
 
