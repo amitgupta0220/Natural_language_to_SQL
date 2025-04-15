@@ -1,6 +1,6 @@
 # Natural Language to SQL
 
-![App Screenshot](static/Annotation 2025-04-15 111944.png.png)
+![App Screenshot](static/Annotation 2025-04-15 111944.png)
 
 ## 🧠 Overview
 
